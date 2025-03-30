@@ -14,8 +14,8 @@ class SaleOrder(models.Model):
             # Crear recepción SIN LÍNEAS (vacía) para que productos se elijan manualmente después
             recepcion = order.env['residuo.recepcion'].create({
                 'sale_order_id': order.id,
-                'name': order.env['ir.sequence'].next_by_code('residuo.recepcion') or _('Nueva'),
-                # Removida línea_ids para que no agregue productos automáticamente
+                'name': order.env['ir.sequence'].next_by_code('residuo.recepcion.seq') or _('Nueva'),
+
             })
 
             # Log para verificar creación correcta
