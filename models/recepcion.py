@@ -38,10 +38,10 @@ class ResiduoRecepcion(models.Model):
                 'origin': rec.name,
             })
 
-            moves = rec.env['stock.move']
+            # Crear movimientos y líneas de movimiento
             for linea in rec.linea_ids:
-                move = moves.create({
-                    'name': linea.product_id.name,
+                move = rec.env['stock.move'].create({
+                    'name': linea.product_id.display_name,
                     'product_id': linea.product_id.id,
                     'product_uom_qty': linea.cantidad,
                     'product_uom': linea.product_id.uom_id.id,
@@ -50,13 +50,21 @@ class ResiduoRecepcion(models.Model):
                     'location_dest_id': stock_location_destino,
                 })
 
-                # Forzar la cantidad recibida manualmente
-                move.quantity_done = linea.cantidad
+                # Crear move.line con qty_done explícitamente
+                rec.env['stock.move.line'].create({
+                    'move_id': move.id,
+                    'picking_id': picking.id,
+                    'product_id': linea.product_id.id,
+                    'product_uom_id': linea.product_id.uom_id.id,
+                    'qty_done': linea.cantidad,
+                    'location_id': stock_location_cliente,
+                    'location_dest_id': stock_location_destino,
+                })
 
             picking.action_confirm()
             picking.action_assign()
 
-            # Valida automáticamente usando button_validate()
+            # Ahora sí, con move.lines creados, puedes validar automáticamente
             if picking.state in ('assigned', 'confirmed'):
                 picking.button_validate()
             else:
@@ -66,6 +74,7 @@ class ResiduoRecepcion(models.Model):
                 'estado': 'confirmado',
                 'picking_id': picking.id
             })
+
 
 
 class ResiduoRecepcionLinea(models.Model):
