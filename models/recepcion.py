@@ -67,7 +67,7 @@ class ResiduoRecepcionLinea(models.Model):
     product_id = fields.Many2one(
         'product.product',
         string='Residuo',
-        domain=[('product_tmpl_id.detailed_type', '=', 'product')],  # Este es el dominio correcto
+        domain=[('product_tmpl_id.type', '=', 'consu')],
         required=True,
         context={'create': False}
     )
