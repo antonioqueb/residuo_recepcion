@@ -53,6 +53,16 @@ class ResiduoRecepcion(models.Model):
             picking.action_confirm()
             picking.action_assign()
 
+            # Valida automáticamente el picking
+            if picking.state != 'assigned':
+                raise UserError(_('No se pudo reservar completamente el inventario. Verifique existencias o configuraciones.'))
+
+            # Crear registro de validación inmediata
+            immediate_transfer_wizard = rec.env['stock.immediate.transfer'].create({
+                'pick_ids': [(4, picking.id)]
+            })
+            immediate_transfer_wizard.process()
+
             rec.write({
                 'estado': 'confirmado',
                 'picking_id': picking.id
