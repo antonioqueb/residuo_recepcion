@@ -54,7 +54,7 @@
 
     <!-- Acción -->
     <record id="action_residuo_recepcion" model="ir.actions.act_window">
-        <field name="name">Recepciones de Residuos</field>
+        <field name="name">Recolecciones</field>
         <field name="res_model">residuo.recepcion</field>
         <field name="view_mode">list,form</field>
     </record>
