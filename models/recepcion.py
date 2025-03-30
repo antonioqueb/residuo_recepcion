@@ -1,4 +1,5 @@
 from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 
 class ResiduoRecepcion(models.Model):
     _name = 'residuo.recepcion'
@@ -15,47 +16,70 @@ class ResiduoRecepcion(models.Model):
     linea_ids = fields.One2many('residuo.recepcion.linea', 'recepcion_id', string='Residuos Recolectados')
 
     def action_confirmar(self):
-        stock_location_cliente = self.sale_order_id.partner_id.property_stock_customer.id
-        stock_location_destino = self.env.ref('stock.stock_location_stock').id
-        picking_type_in = self.env.ref('stock.picking_type_in')
+        for rec in self:
+            if rec.estado != 'borrador':
+                raise UserError(_('La recepción ya ha sido confirmada.'))
 
-        picking = self.env['stock.picking'].create({
-            'picking_type_id': picking_type_in.id,
-            'location_id': stock_location_cliente,
-            'location_dest_id': stock_location_destino,
-            'origin': self.name,
-        })
+            if not rec.linea_ids:
+                raise UserError(_('Debe agregar al menos un residuo a recolectar.'))
 
-        for linea in self.linea_ids:
-            self.env['stock.move'].create({
-                'name': linea.product_id.name,
-                'product_id': linea.product_id.id,
-                'product_uom_qty': linea.cantidad,
-                'product_uom': linea.product_id.uom_id.id,
-                'picking_id': picking.id,
+            for linea in rec.linea_ids:
+                if not linea.product_id.uom_id or not linea.product_id.categ_id:
+                    raise UserError(_('El producto %s no tiene unidad de medida o categoría definida.') % linea.product_id.display_name)
+
+            stock_location_cliente = rec.sale_order_id.partner_id.property_stock_customer.id
+            stock_location_destino = rec.env.ref('stock.stock_location_stock').id
+            picking_type_in = rec.env.ref('stock.picking_type_in')
+
+            picking = rec.env['stock.picking'].create({
+                'picking_type_id': picking_type_in.id,
                 'location_id': stock_location_cliente,
                 'location_dest_id': stock_location_destino,
+                'origin': rec.name,
             })
 
-        picking.action_confirm()
-        picking.action_assign()
+            for linea in rec.linea_ids:
+                rec.env['stock.move'].create({
+                    'name': linea.product_id.name,
+                    'product_id': linea.product_id.id,
+                    'product_uom_qty': linea.cantidad,
+                    'product_uom': linea.product_id.uom_id.id,
+                    'picking_id': picking.id,
+                    'location_id': stock_location_cliente,
+                    'location_dest_id': stock_location_destino,
+                })
 
-        self.write({
-            'estado': 'confirmado',
-            'picking_id': picking.id
-        })
+            picking.action_confirm()
+            picking.action_assign()
+
+            rec.write({
+                'estado': 'confirmado',
+                'picking_id': picking.id
+            })
 
 class ResiduoRecepcionLinea(models.Model):
     _name = 'residuo.recepcion.linea'
     _description = 'Detalle de Residuos Recolectados'
 
     recepcion_id = fields.Many2one('residuo.recepcion', string='Recepción', ondelete='cascade')
-    product_id = fields.Many2one('product.product', string='Residuo', domain=[('type','=','product')], required=True)
+    product_id = fields.Many2one(
+        'product.product',
+        string='Residuo',
+        domain=[('type', '=', 'product')],
+        required=True,
+        context={'create': False}
+    )
     cantidad = fields.Float(string='Cantidad', required=True)
+    unidad = fields.Char(string='Unidad', compute='_compute_extra_info', store=True)
+    categoria = fields.Char(string='Categoría', compute='_compute_extra_info', store=True)
 
+    @api.depends('product_id')
+    def _compute_extra_info(self):
+        for rec in self:
+            rec.unidad = rec.product_id.uom_id.name if rec.product_id.uom_id else ''
+            rec.categoria = rec.product_id.categ_id.name if rec.product_id.categ_id else ''
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     es_recoleccion = fields.Boolean(string="Es un servicio de recolección")
-

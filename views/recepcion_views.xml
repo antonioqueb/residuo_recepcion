@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <!-- FORMULARIO -->
     <record id="view_residuo_recepcion_form" model="ir.ui.view">
         <field name="name">residuo.recepcion.form</field>
         <field name="model">residuo.recepcion</field>
@@ -23,10 +22,12 @@
                     <notebook>
                         <page string="Residuos Recolectados">
                             <field name="linea_ids">
-                                <list editable="bottom">
+                                <tree editable="bottom">
                                     <field name="product_id"/>
                                     <field name="cantidad"/>
-                                </list>
+                                    <field name="unidad"/>
+                                    <field name="categoria"/>
+                                </tree>
                             </field>
                         </page>
                     </notebook>
@@ -35,27 +36,24 @@
         </field>
     </record>
 
-    <!-- LISTA -->
     <record id="view_residuo_recepcion_tree" model="ir.ui.view">
         <field name="name">residuo.recepcion.list</field>
         <field name="model">residuo.recepcion</field>
         <field name="arch" type="xml">
-            <list>
+            <tree>
                 <field name="name"/>
                 <field name="sale_order_id"/>
                 <field name="estado"/>
-            </list>
+            </tree>
         </field>
     </record>
 
-    <!-- PRIMERO la acción -->
     <record id="action_residuo_recepcion" model="ir.actions.act_window">
         <field name="name">Recepciones de Residuos</field>
         <field name="res_model">residuo.recepcion</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <!-- DESPUÉS los menús -->
     <menuitem id="menu_residuo_root" name="Recolección de Residuos" sequence="10"/>
     <menuitem id="menu_residuo_recepcion" name="Recepciones"
               parent="menu_residuo_root"
