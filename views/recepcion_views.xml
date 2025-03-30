@@ -7,7 +7,11 @@
         <field name="arch" type="xml">
             <form string="Recepción de Residuos">
                 <header>
-                    <button name="action_confirmar" type="object" string="Confirmar" states="borrador" class="btn-primary"/>
+                <button name="action_confirmar"
+                        type="object"
+                        string="Confirmar"
+                        class="btn-primary"
+                        modifiers='{"invisible": [["estado", "!=", "borrador"]]}'/>
                     <field name="estado" widget="statusbar" statusbar_visible="borrador,confirmado"/>
                 </header>
                 <sheet>
