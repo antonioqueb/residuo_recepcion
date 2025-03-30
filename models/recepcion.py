@@ -6,7 +6,12 @@ class ResiduoRecepcion(models.Model):
     _description = 'Recepción de Residuos Peligrosos'
     _inherit = ['mail.thread']
 
-    name = fields.Char(default=lambda self: _('Nueva'), readonly=True, tracking=True)
+    name = fields.Char(
+        default=lambda self: self.env['ir.sequence'].next_by_code('residuo.recepcion.seq') or _('Nueva'),
+        readonly=True,
+        tracking=True
+        )
+
     sale_order_id = fields.Many2one('sale.order', string='Orden de Venta', required=True, tracking=True)
     picking_id = fields.Many2one('stock.picking', string='Entrada de Inventario', readonly=True)
     estado = fields.Selection([

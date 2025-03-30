@@ -7,6 +7,7 @@
     'depends': ['sale', 'stock', 'product'],
     'data': [
         'security/ir.model.access.csv',
+        'data/secuencia_recepcion.xml',
         'views/recepcion_views.xml',
         'views/sale_order_views.xml',
     ],
