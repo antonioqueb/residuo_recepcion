@@ -60,7 +60,7 @@
     </record>
 
     <!-- Menú -->
-    <menuitem id="menu_residuo_root" name="Recolección de Residuos" sequence="10"/>
+    <menuitem id="menu_residuo_root" name="Recolecciones" sequence="10"/>
     <menuitem id="menu_residuo_recepcion" name="Recepciones"
               parent="menu_residuo_root"
               action="residuo_recepcion.action_residuo_recepcion"
