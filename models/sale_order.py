@@ -19,6 +19,9 @@ class SaleOrder(models.Model):
                     'sale_order_id': order.id,
                     'name': order.env['ir.sequence'].next_by_code('residuo.recepcion') or _('Nueva'),
                     'linea_ids': lineas,
-                    # El estado es por defecto borrador, no necesita especificarse.
                 })
+
+                # Fuerza a Odoo a refrescar el campo One2many inmediatamente
+                order.invalidate_model(['recepcion_ids'])
+
         return res
