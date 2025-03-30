@@ -1,4 +1,7 @@
 from odoo import models, fields, api, _
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -8,20 +11,23 @@ class SaleOrder(models.Model):
     def action_confirm(self):
         res = super(SaleOrder, self).action_confirm()
         for order in self:
-            residuos = order.order_line.filtered(lambda l: l.product_id.es_recoleccion)
-            if residuos:
-                lineas = [(0, 0, {
-                    'product_id': l.product_id.id,
-                    'cantidad': l.product_uom_qty,
-                }) for l in residuos]
+            # Ahora se considera TODAS las líneas sin importar el campo "es_recoleccion"
+            lineas = [(0, 0, {
+                'product_id': line.product_id.id,
+                'cantidad': line.product_uom_qty,
+            }) for line in order.order_line]
 
-                order.env['residuo.recepcion'].create({
-                    'sale_order_id': order.id,
-                    'name': order.env['ir.sequence'].next_by_code('residuo.recepcion') or _('Nueva'),
-                    'linea_ids': lineas,
-                })
+            # Crear siempre la recepción (estado borrador por defecto)
+            recepcion = order.env['residuo.recepcion'].create({
+                'sale_order_id': order.id,
+                'name': order.env['ir.sequence'].next_by_code('residuo.recepcion') or _('Nueva'),
+                'linea_ids': lineas,
+            })
 
-                # Fuerza a Odoo a refrescar el campo One2many inmediatamente
-                order.invalidate_model(['recepcion_ids'])
+            # Log para verificar creación correcta
+            _logger.info(f'Recepción creada automáticamente: {recepcion.name}, ID: {recepcion.id}, Orden de venta: {order.name}')
+
+            # Invalida la caché para reflejar los cambios inmediatos en la UI
+            order.invalidate_model(['recepcion_ids'])
 
         return res
