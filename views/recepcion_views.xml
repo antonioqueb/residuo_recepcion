@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Formulario de recepción -->
+    <record id="view_residuo_recepcion_form" model="ir.ui.view">
+        <field name="name">residuo.recepcion.form</field>
+        <field name="model">residuo.recepcion</field>
+        <field name="arch" type="xml">
+            <form string="Recepción de Residuos">
+                <header>
+                    <button name="action_confirmar" type="object" string="Confirmar" states="borrador" class="btn-primary"/>
+                    <field name="estado" widget="statusbar" statusbar_visible="borrador,confirmado"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name" readonly="1"/>
+                        <field name="sale_order_id"/>
+                        <field name="picking_id" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Residuos Recolectados">
+                            <field name="linea_ids">
+                                <list editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="cantidad"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vista lista -->
+    <record id="view_residuo_recepcion_tree" model="ir.ui.view">
+        <field name="name">residuo.recepcion.list</field>
+        <field name="model">residuo.recepcion</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="sale_order_id"/>
+                <field name="estado"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Acción primero -->
+    <act_window id="action_residuo_recepcion" name="Recepciones de Residuos"
+                res_model="residuo.recepcion" view_mode="list,form"/>
+
+    <!-- Menú después -->
+    <menuitem id="menu_residuo_root" name="Residuos" sequence="10"/>
+    <menuitem id="menu_residuo_recepcion" name="Recepciones" parent="menu_residuo_root"
+              action="action_residuo_recepcion" sequence="10"/>
+</odoo>

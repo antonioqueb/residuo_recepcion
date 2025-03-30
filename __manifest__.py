@@ -1,0 +1,14 @@
+{
+    'name': 'Recepción de Residuos',
+    'version': '1.0',
+    'summary': 'Gestión de recepción de residuos peligrosos desde órdenes de venta',
+    'category': 'Inventory',
+    'author': 'Alphaqueb Consulting',
+    'depends': ['sale', 'stock', 'product'],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/recepcion_views.xml',
+    ],
+    'installable': True,
+    'application': False,
+}
