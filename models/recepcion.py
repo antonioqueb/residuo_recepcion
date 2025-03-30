@@ -1,6 +1,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
+
 class ResiduoRecepcion(models.Model):
     _name = 'residuo.recepcion'
     _description = 'Recepción de Residuos Peligrosos'
@@ -57,6 +58,7 @@ class ResiduoRecepcion(models.Model):
                 'picking_id': picking.id
             })
 
+
 class ResiduoRecepcionLinea(models.Model):
     _name = 'residuo.recepcion.linea'
     _description = 'Detalle de Residuos Recolectados'
@@ -70,14 +72,11 @@ class ResiduoRecepcionLinea(models.Model):
         context={'create': False}
     )
     cantidad = fields.Float(string='Cantidad', required=True)
-    unidad = fields.Char(string='Unidad', compute='_compute_extra_info', store=True)
-    categoria = fields.Char(string='Categoría', compute='_compute_extra_info', store=True)
 
-    @api.depends('product_id')
-    def _compute_extra_info(self):
-        for rec in self:
-            rec.unidad = rec.product_id.uom_id.name if rec.product_id.uom_id else ''
-            rec.categoria = rec.product_id.categ_id.name if rec.product_id.categ_id else ''
+    # Campos relacionados, no almacenados localmente
+    unidad = fields.Char(string='Unidad de Medida', related='product_id.uom_id.name', readonly=True)
+    categoria = fields.Char(string='Categoría', related='product_id.categ_id.name', readonly=True)
+
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
