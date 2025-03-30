@@ -67,7 +67,7 @@ class ResiduoRecepcionLinea(models.Model):
     product_id = fields.Many2one(
         'product.product',
         string='Residuo',
-        domain=[('detailed_type', '=', 'product')],  # Este dominio es el correcto desde Odoo 15+
+        domain=[('product_tmpl_id.detailed_type', '=', 'product')],  # Este es el dominio correcto
         required=True,
         context={'create': False}
     )
