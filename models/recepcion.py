@@ -50,13 +50,13 @@ class ResiduoRecepcion(models.Model):
                     'location_dest_id': stock_location_destino,
                 })
 
-                # Crear move.line con qty_done explícitamente
+                # Crear move.line con quantity_done explícitamente
                 rec.env['stock.move.line'].create({
                     'move_id': move.id,
                     'picking_id': picking.id,
                     'product_id': linea.product_id.id,
                     'product_uom_id': linea.product_id.uom_id.id,
-                    'qty_done': linea.cantidad,
+                    'quantity_done': linea.cantidad,
                     'location_id': stock_location_cliente,
                     'location_dest_id': stock_location_destino,
                 })
