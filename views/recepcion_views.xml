@@ -4,6 +4,7 @@
     <record id="view_residuo_recepcion_form" model="ir.ui.view">
         <field name="name">residuo.recepcion.form</field>
         <field name="model">residuo.recepcion</field>
+        <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Recepción de Residuos">
                 <header>
@@ -41,6 +42,7 @@
     <record id="view_residuo_recepcion_tree" model="ir.ui.view">
         <field name="name">residuo.recepcion.list</field>
         <field name="model">residuo.recepcion</field>
+        <field name="type">tree</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
