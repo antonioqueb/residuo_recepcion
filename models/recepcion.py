@@ -67,13 +67,12 @@ class ResiduoRecepcionLinea(models.Model):
     product_id = fields.Many2one(
         'product.product',
         string='Residuo',
-        domain=[('type', '=', 'product')],
+        domain=[('detailed_type', '=', 'product')],  # Este dominio es el correcto desde Odoo 15+
         required=True,
         context={'create': False}
     )
     cantidad = fields.Float(string='Cantidad', required=True)
 
-    # Campos relacionados, no almacenados localmente
     unidad = fields.Char(string='Unidad de Medida', related='product_id.uom_id.name', readonly=True)
     categoria = fields.Char(string='Categoría', related='product_id.categ_id.name', readonly=True)
 
