@@ -20,7 +20,7 @@
                         name="%(action_residuo_recepcion_sale_order)d"
                         modifiers='{"invisible": [["recepcion_ids", "=", false]]}'
                         icon="fa-arrow-down">
-                    <field string="Recepciones" name="recepcion_ids" widget="statinfo"/>
+                    Recepciones
                 </button>
             </xpath>
         </field>

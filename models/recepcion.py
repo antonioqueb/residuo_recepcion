@@ -1,7 +1,6 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
-
 class ResiduoRecepcion(models.Model):
     _name = 'residuo.recepcion'
     _description = 'Recepción de Residuos Peligrosos'
@@ -39,8 +38,9 @@ class ResiduoRecepcion(models.Model):
                 'origin': rec.name,
             })
 
+            moves = rec.env['stock.move']
             for linea in rec.linea_ids:
-                rec.env['stock.move'].create({
+                move = moves.create({
                     'name': linea.product_id.name,
                     'product_id': linea.product_id.id,
                     'product_uom_qty': linea.cantidad,
@@ -50,10 +50,13 @@ class ResiduoRecepcion(models.Model):
                     'location_dest_id': stock_location_destino,
                 })
 
+                # Forzar la cantidad recibida manualmente
+                move.quantity_done = linea.cantidad
+
             picking.action_confirm()
             picking.action_assign()
 
-            # Valida automáticamente usando button_validate() directo en Odoo 18
+            # Valida automáticamente usando button_validate()
             if picking.state in ('assigned', 'confirmed'):
                 picking.button_validate()
             else:
@@ -63,6 +66,7 @@ class ResiduoRecepcion(models.Model):
                 'estado': 'confirmado',
                 'picking_id': picking.id
             })
+
 
 class ResiduoRecepcionLinea(models.Model):
     _name = 'residuo.recepcion.linea'
