@@ -14,9 +14,11 @@ class SaleOrder(models.Model):
                     'product_id': l.product_id.id,
                     'cantidad': l.product_uom_qty,
                 }) for l in residuos]
+
                 order.env['residuo.recepcion'].create({
                     'sale_order_id': order.id,
                     'name': order.env['ir.sequence'].next_by_code('residuo.recepcion') or _('Nueva'),
                     'linea_ids': lineas,
+                    # El estado es por defecto borrador, no necesita especificarse.
                 })
         return res
